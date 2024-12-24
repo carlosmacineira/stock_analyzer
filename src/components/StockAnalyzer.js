@@ -1,4 +1,11 @@
-import React, { useState, useEffect } from 'react';
+{!error && !stockData.length && (
+            <div className="flex items-center justify-center h-96">
+              <div className="text-center">
+                <RefreshCw className="h-12 w-12 text-blue-500 animate-spin mb-4 mx-auto" />
+                <p className="text-gray-400">Loading market data...</p>
+              </div>
+            </div>
+          )}import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, AlertCircle, RefreshCw, Sun, Moon } from 'lucide-react';
 import _ from 'lodash';
@@ -118,9 +125,9 @@ const StockAnalyzer = () => {
   }));
 
   return (
-    <div className="min-h-screen w-full bg-[#1a1b1e] absolute top-0 left-0 right-0">
-      <div className="p-4 max-w-[2000px] mx-auto">
-        <div className={`rounded-lg shadow-lg p-6 bg-[#1a1b1e] text-white`}>
+    <div className="min-h-screen w-full bg-[#1a1b1e]">
+      <div className="p-4 container mx-auto">
+        <div className={`rounded-lg shadow-lg p-6 bg-[#1a1b1e] text-white relative z-10`}>
           <div className="flex justify-between items-center mb-6">
             <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>RKLB Real-Time Analysis</h1>
             <div className="flex space-x-2">
@@ -142,8 +149,25 @@ const StockAnalyzer = () => {
           </div>
           
           {error && (
-            <div className="p-4 bg-red-100 text-red-600 rounded-md">
-              {error}
+            <div className="p-6 bg-red-900/20 border border-red-500/20 text-red-400 rounded-md mb-4">
+              <div className="flex flex-col space-y-2">
+                <p>{error}</p>
+                <p className="text-sm">Market Hours (Eastern Time):</p>
+                <ul className="text-sm list-disc pl-5">
+                  <li>Monday - Friday: 9:30 AM - 4:00 PM ET</li>
+                  <li>Weekends: Closed</li>
+                </ul>
+                <p className="text-sm mt-2">
+                  Current Time: {new Date().toLocaleString('en-US', {
+                    timeZone: 'America/New_York',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                    weekday: 'long',
+                    timeZoneName: 'short'
+                  })}
+                </p>
+              </div>
             </div>
           )}
           
@@ -154,25 +178,22 @@ const StockAnalyzer = () => {
           )}
 
           {stockData.length > 0 && (
-            <div className="h-96 mt-6">
+            <div className="h-96 mt-6 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stockData}>
-                  <CartesianGrid 
-                    strokeDasharray="3 3" 
-                    stroke={isDarkMode ? '#374151' : '#e5e7eb'} 
-                  />
+                <LineChart data={stockData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis 
                     dataKey="date" 
-                    stroke={isDarkMode ? '#9ca3af' : '#4b5563'}
-                    tick={{ fill: isDarkMode ? '#9ca3af' : '#4b5563' }}
+                    stroke="#9ca3af"
+                    tick={{ fill: '#9ca3af' }}
                   />
                   <YAxis 
-                    stroke={isDarkMode ? '#9ca3af' : '#4b5563'}
-                    tick={{ fill: isDarkMode ? '#9ca3af' : '#4b5563' }}
+                    stroke="#9ca3af"
+                    tick={{ fill: '#9ca3af' }}
                     domain={['dataMin - 1', 'dataMax + 1']}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}/>
+                  <Legend wrapperStyle={{ color: '#9ca3af' }}/>
                   <Line 
                     type="monotone" 
                     dataKey="close" 
@@ -180,6 +201,7 @@ const StockAnalyzer = () => {
                     stroke="#22c55e"
                     strokeWidth={2}
                     dot={false}
+                    activeDot={{ r: 4 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
