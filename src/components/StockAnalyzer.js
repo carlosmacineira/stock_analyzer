@@ -105,11 +105,11 @@ const StockAnalyzer = () => {
   }));
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
-      <div className="p-4 space-y-4">
-        <div className={`rounded-lg shadow-lg p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+    <div className={`min-h-screen w-full ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+      <div className="p-4">
+        <div className={`rounded-lg shadow-lg p-6 ${isDarkMode ? 'bg-[#1a1b1e] text-white' : 'bg-white text-black'}`}>
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">RKLB Real-Time Analysis</h1>
+            <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>RKLB Real-Time Analysis</h1>
             <div className="flex space-x-2">
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
@@ -143,7 +143,7 @@ const StockAnalyzer = () => {
           {stockData.length > 0 && (
             <div className="h-96 mt-6">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
+                <LineChart data={stockData}>
                   <CartesianGrid 
                     strokeDasharray="3 3" 
                     stroke={isDarkMode ? '#374151' : '#e5e7eb'} 
@@ -151,19 +151,22 @@ const StockAnalyzer = () => {
                   <XAxis 
                     dataKey="date" 
                     stroke={isDarkMode ? '#9ca3af' : '#4b5563'}
+                    tick={{ fill: isDarkMode ? '#9ca3af' : '#4b5563' }}
                   />
                   <YAxis 
                     stroke={isDarkMode ? '#9ca3af' : '#4b5563'}
+                    tick={{ fill: isDarkMode ? '#9ca3af' : '#4b5563' }}
+                    domain={['dataMin - 1', 'dataMax + 1']}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend wrapperStyle={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}/>
                   <Line 
                     type="monotone" 
                     dataKey="close" 
-                    name="Price"
+                    name="Price" 
+                    stroke="#22c55e"
                     strokeWidth={2}
                     dot={false}
-                    stroke={(data) => (data.close > avgPrice ? '#22c55e' : '#ef4444')}
                   />
                 </LineChart>
               </ResponsiveContainer>
