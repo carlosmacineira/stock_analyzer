@@ -45,19 +45,32 @@ const StockAnalyzer = () => {
         throw new Error('No data received. Please check if the market is open.');
       }
       
-      const formattedData = Object.entries(data['Time Series (5min)']).map(([timestamp, values]) => ({
-        date: timestamp,
-        close: parseFloat(values['4. close']),
-        volume: parseFloat(values['5. volume']),
-        high: parseFloat(values['2. high']),
-        low: parseFloat(values['3. low']),
-        open: parseFloat(values['1. open'])
-      })).reverse();
+      const formattedData = Object.entries(data['Time Series (5min)']).map(([timestamp, values]) => {
+        const date = new Date(timestamp);
+        const formattedTime = date.toLocaleString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        
+        return {
+          date: formattedTime,
+          close: parseFloat(values['4. close']),
+          volume: parseFloat(values['5. volume']),
+          high: parseFloat(values['2. high']),
+          low: parseFloat(values['3. low']),
+          open: parseFloat(values['1. open'])
+        };
+      }).reverse();
       
       setStockData(formattedData);
       const result = calculateIndicators(formattedData);
       setAnalysis(result);
-      setLastUpdate(new Date().toLocaleTimeString());
+      setLastUpdate(new Date().toLocaleString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }));
     } catch (err) {
       setError(err.message || 'Error fetching stock data. Please try again later.');
       console.error('Error:', err);
@@ -105,9 +118,9 @@ const StockAnalyzer = () => {
   }));
 
   return (
-    <div className={`min-h-screen w-full ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      <div className="p-4">
-        <div className={`rounded-lg shadow-lg p-6 ${isDarkMode ? 'bg-[#1a1b1e] text-white' : 'bg-white text-black'}`}>
+    <div className="min-h-screen w-full bg-[#1a1b1e] absolute top-0 left-0 right-0">
+      <div className="p-4 max-w-[2000px] mx-auto">
+        <div className={`rounded-lg shadow-lg p-6 bg-[#1a1b1e] text-white`}>
           <div className="flex justify-between items-center mb-6">
             <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>RKLB Real-Time Analysis</h1>
             <div className="flex space-x-2">
